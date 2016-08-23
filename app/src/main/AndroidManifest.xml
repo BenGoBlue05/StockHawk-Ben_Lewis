@@ -43,6 +43,7 @@
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
             android:exported="false" />
 
+        <activity android:name=".ui.DetailActivity"></activity>
     </application>
 
 </manifest>
