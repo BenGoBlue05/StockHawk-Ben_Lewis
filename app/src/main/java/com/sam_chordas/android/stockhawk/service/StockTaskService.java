@@ -117,10 +117,7 @@ public class StockTaskService extends GcmTaskService {
             try {
                 getResponse = fetchData(urlString);
                 result = GcmNetworkManager.RESULT_SUCCESS;
-//        if (getResponse == null || TextUtils.isEmpty(getResponse)){
-//            Log.i(LOG_TAG, "getResponse IS EMPTY");
-//          Toast.makeText(getBaseContext(), "Stock symbol not found", Toast.LENGTH_LONG).show();
-//        }
+
                 try {
                     ContentValues contentValues = new ContentValues();
                     // update ISCURRENT to 0 (false) so new data is current

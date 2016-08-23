@@ -85,7 +85,7 @@ public class Utils {
             }
             Log.i(LOG_TAG, "NAME: " + jsonObject.getString("Name"));
             String change = jsonObject.getString("Change");
-            builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
+            builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol").toUpperCase());
             builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
             builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
                     jsonObject.getString("ChangeinPercent"), true));
@@ -96,6 +96,7 @@ public class Utils {
             } else {
                 builder.withValue(QuoteColumns.ISUP, 1);
             }
+            builder.withValue(QuoteColumns.NAME, jsonObject.getString("Name"));
 
         } catch (JSONException e) {
             e.printStackTrace();
