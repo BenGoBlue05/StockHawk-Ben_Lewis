@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -96,7 +97,8 @@ public class MyStocksActivity extends AppCompatActivity
                         mCursor.moveToPosition(position);
                         int symbolInd = mCursor.getColumnIndex(QuoteColumns.SYMBOL);
                         Intent intent = new Intent(getApplicationContext(), DetailActivity.class)
-                                .putExtra(Intent.EXTRA_TEXT, mCursor.getString(symbolInd));
+                                .putExtra(Intent.EXTRA_TEXT, mCursor.getString(symbolInd))
+                                .putExtra("tag", "historical");
                         startActivity(intent);
                     }
                 }));
@@ -114,24 +116,29 @@ public class MyStocksActivity extends AppCompatActivity
                             .inputType(InputType.TYPE_CLASS_TEXT)
                             .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
                                 @Override
-                                public void onInput(MaterialDialog dialog, CharSequence input) {
+                                public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                                     // On FAB click, receive user input. Make sure the stock doesn't already exist
                                     // in the DB and proceed accordingly
-                                    Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-                                            new String[]{QuoteColumns.SYMBOL}, QuoteColumns.SYMBOL + "= ?",
-                                            new String[]{input.toString()}, null);
-                                    if (c.getCount() != 0) {
-                                        Toast toast =
-                                                Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
-                                                        Toast.LENGTH_LONG);
-                                        toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
-                                        toast.show();
-                                        return;
-                                    } else {
-                                        // Add the stock to DB
-                                        mServiceIntent.putExtra("tag", "add");
-                                        mServiceIntent.putExtra("symbol", input.toString());
-                                        startService(mServiceIntent);
+                                    Cursor c = getContentResolver().query(
+                                            QuoteProvider.Quotes.CONTENT_URI,
+                                            new String[]{QuoteColumns.SYMBOL},
+                                            QuoteColumns.SYMBOL + "= ?",
+                                            new String[]{input.toString().toUpperCase()},
+                                            null);
+                                    if (c != null) {
+                                        if (c.getCount() != 0) {
+                                            Toast toast =
+                                                    Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                                                            Toast.LENGTH_LONG);
+                                            toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+                                            toast.show();
+                                        } else {
+                                            // Add the stock to DB
+                                            mServiceIntent.putExtra("tag", "add");
+                                            mServiceIntent.putExtra("symbol", input.toString());
+                                            startService(mServiceIntent);
+                                        }
+                                        c.close();
                                     }
                                 }
                             })
@@ -228,7 +235,6 @@ public class MyStocksActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
-        mCursor = data;
     }
 
     @Override
