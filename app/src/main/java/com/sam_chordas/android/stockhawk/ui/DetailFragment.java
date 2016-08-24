@@ -80,8 +80,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (id == CURSOR_LOADER_ID){
             return new CursorLoader(getContext(), QuoteProvider.Quotes.CONTENT_URI,
                     DETAIL_COLUMNS,
-                    QuoteColumns.SYMBOL + " = ?" ,
-                    new String[]{mSymbol},
+                    QuoteColumns.SYMBOL + " = ? AND " + QuoteColumns.ISCURRENT + " = ?",
+                    new String[]{mSymbol, "1"},
                     null);
         }
         return null;

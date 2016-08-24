@@ -68,23 +68,26 @@ public class StockTaskService extends GcmTaskService {
         }
         if (params.getTag().equals("init") || params.getTag().equals("periodic")) {
             isUpdate = true;
-            initQueryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-                    new String[]{"Distinct " + QuoteColumns.SYMBOL}, null,
-                    null, null);
-            if (initQueryCursor.getCount() == 0 || initQueryCursor == null) {
-                // Init task. Populates DB with quotes for the symbols seen below
+            initQueryCursor = mContext.getContentResolver().query(
+                    QuoteProvider.Quotes.CONTENT_URI,
+                    new String[]{"Distinct " + QuoteColumns.SYMBOL},
+                    null,
+                    null,
+                    null);
+            if (initQueryCursor == null){
                 try {
+                    Log.i(LOG_TAG, "INITIAL OPENING: NO DATA");
                     urlStringBuilder.append(
                             URLEncoder.encode("\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-            } else if (initQueryCursor != null) {
+
+            } else {
                 DatabaseUtils.dumpCursor(initQueryCursor);
                 initQueryCursor.moveToFirst();
                 for (int i = 0; i < initQueryCursor.getCount(); i++) {
-                    mStoredSymbols.append("\"" +
-                            initQueryCursor.getString(initQueryCursor.getColumnIndex("symbol")) + "\",");
+                    mStoredSymbols.append("\"").append(initQueryCursor.getString(initQueryCursor.getColumnIndex("symbol"))).append("\",");
                     initQueryCursor.moveToNext();
                 }
                 mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), ")");
@@ -112,30 +115,32 @@ public class StockTaskService extends GcmTaskService {
         String getResponse;
         int result = GcmNetworkManager.RESULT_FAILURE;
 
-        if (urlStringBuilder != null) {
-            urlString = urlStringBuilder.toString();
-            try {
-                getResponse = fetchData(urlString);
-                result = GcmNetworkManager.RESULT_SUCCESS;
+        urlString = urlStringBuilder.toString();
+        try {
+            getResponse = fetchData(urlString);
+            result = GcmNetworkManager.RESULT_SUCCESS;
 
-                try {
-                    ContentValues contentValues = new ContentValues();
-                    // update ISCURRENT to 0 (false) so new data is current
-                    if (isUpdate) {
-                        contentValues.put(QuoteColumns.ISCURRENT, 0);
-                        mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
-                                null, null);
-                    }
-                    mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                            Utils.quoteJsonToContentVals(getResponse));
-                } catch (RemoteException | OperationApplicationException e) {
-                    Log.e(LOG_TAG, "Error applying batch insert", e);
-                } catch (NullPointerException e) {
-                    Log.e(LOG_TAG, "STOCK SYMBOL NOT FOUND", e);
+            try {
+                ContentValues contentValues = new ContentValues();
+                // update ISCURRENT to 0 (false) so new data is current
+                if (isUpdate) {
+                    contentValues.put(QuoteColumns.ISCURRENT, 0);
+                    mContext.getContentResolver().update(
+                            QuoteProvider.Quotes.CONTENT_URI,
+                            contentValues,
+                            null,
+                            null);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+                
+                mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                        Utils.quoteJsonToContentVals(getResponse));
+            } catch (RemoteException | OperationApplicationException e) {
+                Log.e(LOG_TAG, "Error applying batch insert", e);
+            } catch (NullPointerException e) {
+                Log.e(LOG_TAG, "STOCK SYMBOL NOT FOUND", e);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return result;

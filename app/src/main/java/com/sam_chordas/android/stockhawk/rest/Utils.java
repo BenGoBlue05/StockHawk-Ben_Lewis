@@ -26,7 +26,7 @@ public class Utils {
         JSONArray resultsArray = null;
         try {
             jsonObject = new JSONObject(JSON);
-            if (jsonObject != null && jsonObject.length() != 0) {
+            if (jsonObject.length() != 0) {
                 jsonObject = jsonObject.getJSONObject("query");
                 int count = Integer.parseInt(jsonObject.getString("count"));
                 if (count == 1) {
@@ -68,7 +68,7 @@ public class Utils {
         change = change.substring(1, change.length());
         double round = (double) Math.round(Double.parseDouble(change) * 100) / 100;
         change = String.format("%.2f", round);
-        StringBuffer changeBuffer = new StringBuffer(change);
+        StringBuilder changeBuffer = new StringBuilder(change);
         changeBuffer.insert(0, weight);
         changeBuffer.append(ampersand);
         change = changeBuffer.toString();
@@ -83,7 +83,6 @@ public class Utils {
                 Log.i(LOG_TAG, "NULL OBJECT");
                 return null;
             }
-            Log.i(LOG_TAG, "NAME: " + jsonObject.getString("Name"));
             String change = jsonObject.getString("Change");
             builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol").toUpperCase());
             builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
