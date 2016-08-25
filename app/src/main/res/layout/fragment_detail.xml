@@ -28,5 +28,10 @@
         android:layout_height="wrap_content"
         tools:text="+.46%" />
 
+    <com.github.mikephil.charting.charts.LineChart
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:id="@+id/line_chart"/>
+
 
 </LinearLayout>

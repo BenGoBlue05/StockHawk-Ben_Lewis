@@ -14,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
@@ -21,7 +25,7 @@ import com.sam_chordas.android.stockhawk.rest.StockHistory;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockHistoryService;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,10 +64,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     TextView mChangeView;
     @BindView(R.id.detail_name)
     TextView mNameView;
+    @BindView(R.id.line_chart)
+    LineChart mLineChart;
 
     private String mSymbol;
-    private double[] mClosingPrices;
-    private String[] mDates;
+    private ArrayList<Entry> mClosingPrices;
+    private ArrayList<String> mDates;
+    private int mCount;
+
+
     public DetailFragment() {
     }
 
@@ -85,7 +94,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 //        Log.i(LOG_TAG, String.format(getString(R.string.query), "a", "b", "c"));
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
-        fetchStockHistory(7);
+        fetchStockHistory(5);
         return rootView;
     }
 
@@ -120,7 +129,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     public void fetchStockHistory(int daysAgo) {
 
-
         Log.i(LOG_TAG, "DATE: " + Utils.getDate(1));
         Log.i(LOG_TAG, "DATE: " + Utils.getDate(8));
         Retrofit retrofit = new Retrofit.Builder()
@@ -138,13 +146,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             public void onResponse(Call<StockHistory> call, Response<StockHistory> response) {
                 Log.i(LOG_TAG, "SUCCESS");
                 StockHistory history = response.body();
-                int count = history.getCount();
-                mDates = history.getDates(count);
-                mClosingPrices = history.getClosingPrices(count);
-                Log.i(LOG_TAG, "COUNT: " + count);
-                Log.i(LOG_TAG, "CLOSING PRICES: " + Arrays.toString(mClosingPrices));
-                Log.i(LOG_TAG, "DATES: " + Arrays.toString(mDates));
-
+                mCount = history.getCount();
+                mDates = history.getDates(mCount);
+                mClosingPrices = history.getClosingPrices(mCount);
+                Log.i(LOG_TAG, "COUNT: " + mCount);
+                updateLineChart();
             }
 
             @Override
@@ -152,7 +158,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 Log.i(LOG_TAG, "FAILURE");
             }
         });
+    }
 
+    public void updateLineChart() {
+        LineDataSet lineDataSet = new LineDataSet(mClosingPrices, "$");
+        LineData lineData = new LineData(mDates, lineDataSet);
+        mLineChart.setData(lineData);
     }
 
 }

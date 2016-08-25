@@ -1,5 +1,8 @@
 package com.sam_chordas.android.stockhawk.rest;
 
+import com.github.mikephil.charting.data.Entry;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,21 +51,21 @@ public class StockHistory {
         return query.getCount();
     }
 
-    public double[] getClosingPrices(int count) {
-        double[] closingPrices = new double[count];
+    public ArrayList<Entry> getClosingPrices(int count) {
+        ArrayList<Entry> closingPrices = new ArrayList<Entry>();
         List<Quote> quotes = query.getResults().getQuotes();
         for (int i = 0; i < count; i++) {
             double price = quotes.get(i).getClose();
-            closingPrices[i] = Double.parseDouble(String.format(Locale.US, "%.2f", price));
+            closingPrices.add(new Entry(Float.parseFloat(String.format(Locale.US, "%.2f", price)), count - i - 1));
         }
         return closingPrices;
     }
 
-    public String[] getDates(int count) {
-        String[] dates = new String[count];
+    public ArrayList<String> getDates(int count) {
+        ArrayList<String> dates = new ArrayList<>();
         List<Quote> quotes = query.getResults().getQuotes();
         for (int i = 0; i < count; i++) {
-            dates[i] = quotes.get(i).getDate();
+            dates.add(quotes.get(count - i - 1).getDate());
         }
         return dates;
     }
