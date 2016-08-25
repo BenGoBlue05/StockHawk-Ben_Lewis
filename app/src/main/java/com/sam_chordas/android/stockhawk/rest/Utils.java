@@ -10,7 +10,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -84,7 +87,7 @@ public class Utils {
                 return null;
             }
             String change = jsonObject.getString("Change");
-            builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol").toUpperCase());
+            builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("Symbol").toUpperCase());
             builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
             builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
                     jsonObject.getString("ChangeinPercent"), true));
@@ -101,5 +104,17 @@ public class Utils {
             e.printStackTrace();
         }
         return builder.build();
+    }
+
+    public static String buildStockHistoryQuery(String symbol, String startDate, String endDate){
+        return "select * from yahoo.finance.historicaldata where symbol = \'" +
+                symbol + "\' and startDate = \'" + startDate + "\' and endDate = \'" + endDate + "\'";
+    }
+
+    public static String getDate(int daysAgo){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -daysAgo);
+        return dateFormat.format(calendar.getTime());
     }
 }

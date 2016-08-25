@@ -17,17 +17,33 @@ import android.widget.TextView;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.rest.StockHistory;
+import com.sam_chordas.android.stockhawk.rest.Utils;
+import com.sam_chordas.android.stockhawk.service.StockHistoryService;
+
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final int COL_ID = 0;
+    public static final int COL_SYMBOL = 1;
+    public static final int COL_BIDPRICE = 2;
+    public static final int COL_PERCENT_CHANGE = 3;
+    public static final int COL_CHANGE = 4;
+    public static final int COL_NAME = 5;
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+    private static final String API_BASE_URL = "https://query.yahooapis.com/";
+    private static final int CURSOR_LOADER_ID = 100;
 
-    private String mSymbol;
-    private static final int CURSOR_LOADER_ID = 2;
     private static final String[] DETAIL_COLUMNS = new String[]{
             QuoteColumns._ID,
             QuoteColumns.SYMBOL,
@@ -36,19 +52,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             QuoteColumns.CHANGE,
             QuoteColumns.NAME};
 
-    public static final int COL_ID = 0;
-    public static final int COL_SYMBOL = 1;
-    public static final int COL_BIDPRICE = 2;
-    public static final int COL_PERCENT_CHANGE = 3;
-    public static final int COL_CHANGE = 4;
-    public static final int COL_NAME = 5;
+    @BindView(R.id.detail_symbol)
+    TextView mSymbolView;
+    @BindView(R.id.detail_price)
+    TextView mPriceView;
+    @BindView(R.id.detail_change)
+    TextView mChangeView;
+    @BindView(R.id.detail_name)
+    TextView mNameView;
 
-
-    @BindView(R.id.detail_symbol) TextView mSymbolView;
-    @BindView(R.id.detail_price) TextView mPriceView;
-    @BindView(R.id.detail_change) TextView mChangeView;
-    @BindView(R.id.detail_name) TextView mNameView;
-
+    private String mSymbol;
+    private double[] mClosingPrices;
+    private String[] mDates;
     public DetailFragment() {
     }
 
@@ -57,10 +72,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         super.onCreate(savedInstanceState);
 
         Intent intent = getActivity().getIntent();
-        if (intent != null){
+        if (intent != null) {
             mSymbol = intent.getStringExtra(Intent.EXTRA_TEXT);
         }
-
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
     }
 
@@ -68,8 +82,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView =  inflater.inflate(R.layout.fragment_detail, container, false);
+//        Log.i(LOG_TAG, String.format(getString(R.string.query), "a", "b", "c"));
+        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
+        fetchStockHistory(7);
         return rootView;
     }
 
@@ -77,7 +93,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, mSymbol);
-        if (id == CURSOR_LOADER_ID){
+        if (id == CURSOR_LOADER_ID) {
             return new CursorLoader(getContext(), QuoteProvider.Quotes.CONTENT_URI,
                     DETAIL_COLUMNS,
                     QuoteColumns.SYMBOL + " = ? AND " + QuoteColumns.ISCURRENT + " = ?",
@@ -89,7 +105,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data != null && data.moveToFirst()){
+        if (data != null && data.moveToFirst()) {
             mSymbolView.setText(mSymbol);
             mPriceView.setText(data.getString(COL_BIDPRICE));
             mChangeView.setText(data.getString(COL_CHANGE));
@@ -101,4 +117,42 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
     }
+
+    public void fetchStockHistory(int daysAgo) {
+
+
+        Log.i(LOG_TAG, "DATE: " + Utils.getDate(1));
+        Log.i(LOG_TAG, "DATE: " + Utils.getDate(8));
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        StockHistoryService.StockHistoryAPI stockHistoryAPI =
+                retrofit.create(StockHistoryService.StockHistoryAPI.class);
+
+        String query = Utils.buildStockHistoryQuery(mSymbol, Utils.getDate(daysAgo), Utils.getDate(1));
+        Call<StockHistory> serviceCall = stockHistoryAPI.getHistory(query);
+        serviceCall.enqueue(new Callback<StockHistory>() {
+            @Override
+            public void onResponse(Call<StockHistory> call, Response<StockHistory> response) {
+                Log.i(LOG_TAG, "SUCCESS");
+                StockHistory history = response.body();
+                int count = history.getCount();
+                mDates = history.getDates(count);
+                mClosingPrices = history.getClosingPrices(count);
+                Log.i(LOG_TAG, "COUNT: " + count);
+                Log.i(LOG_TAG, "CLOSING PRICES: " + Arrays.toString(mClosingPrices));
+                Log.i(LOG_TAG, "DATES: " + Arrays.toString(mDates));
+
+            }
+
+            @Override
+            public void onFailure(Call<StockHistory> call, Throwable t) {
+                Log.i(LOG_TAG, "FAILURE");
+            }
+        });
+
+    }
+
 }
