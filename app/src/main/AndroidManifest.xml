@@ -45,15 +45,23 @@
 
         <activity android:name=".ui.DetailActivity" />
 
-        <receiver android:name=".widget.StockWidget">
+        <receiver
+            android:name=".widget.StockWidgetProvider"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.sam_chordas.android.stockhawk.ACTION_DATA_UPDATED" />
             </intent-filter>
-
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/stock_widget_info" />
         </receiver>
+
+        <service
+            android:name=".widget.StockRemoteViewService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

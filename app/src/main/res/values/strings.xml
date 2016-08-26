@@ -14,4 +14,5 @@
     <string name="one_week">1 week</string>
     <string name="one_month">1 month</string>
     <string name="one_year">1 year</string>
+    <string name="no_stock_info">No stock info available</string>
 </resources>

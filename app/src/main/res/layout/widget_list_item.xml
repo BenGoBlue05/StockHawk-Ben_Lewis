@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_list_item"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/touch_selector_dark"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/widget_symbol_textview"
+        style="@style/WidgetStyle"
+        tools:text="GOOG" />
+
+    <TextView
+        android:id="@+id/widget_price_textview"
+        style="@style/WidgetStyle"
+        tools:text="738.45" />
+
+    <TextView
+        android:id="@+id/widget_change_textview"
+        style="@style/WidgetStyle"
+        tools:text="+2.24" />
+
+
+
+
+</LinearLayout>
