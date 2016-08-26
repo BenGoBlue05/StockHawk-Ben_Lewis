@@ -10,4 +10,8 @@
     <string name="input_hint">FB</string>
     <string name="input_prefill"></string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="one_week">1 week</string>
+    <string name="one_month">1 month</string>
+    <string name="one_year">1 year</string>
 </resources>

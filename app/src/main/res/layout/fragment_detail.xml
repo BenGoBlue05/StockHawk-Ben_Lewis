@@ -1,37 +1,72 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.sam_chordas.android.stockhawk.ui.DetailFragment"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/detail_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Facebook, Inc. Common Stock"
-        />
-    <TextView
-        android:id="@+id/detail_symbol"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="FB"
-        />
-    <TextView
-        android:id="@+id/detail_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="124.73" />
-    <TextView
-        android:id="@+id/detail_change"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="+.46%" />
-
-    <com.github.mikephil.charting.charts.LineChart
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:id="@+id/line_chart"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context="com.sam_chordas.android.stockhawk.ui.DetailFragment">
 
+        <TextView
+            android:id="@+id/detail_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Facebook, Inc. Common Stock" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/detail_symbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="FB" />
+
+        <TextView
+            android:id="@+id/detail_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="124.73" />
+
+        <TextView
+            android:id="@+id/detail_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="+.46%" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin">
+
+            <TextView
+                android:id="@+id/detail_week_textview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/one_week" />
+
+            <TextView
+                android:id="@+id/detail_month_textview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/one_month" />
+
+            <TextView
+                android:id="@+id/detail_year_textview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/one_year" />
+
+        </LinearLayout>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/line_chart"
+            android:layout_width="match_parent"
+            android:layout_height="400dp" />
+
+    </LinearLayout>
+</ScrollView>

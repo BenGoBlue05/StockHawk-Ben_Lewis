@@ -64,6 +64,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     TextView mChangeView;
     @BindView(R.id.detail_name)
     TextView mNameView;
+    @BindView(R.id.detail_week_textview)
+    TextView mWeekTextView;
+    @BindView(R.id.detail_month_textview)
+    TextView mMonthTextView;
+    @BindView(R.id.detail_year_textview)
+    TextView mYearTextView;
     @BindView(R.id.line_chart)
     LineChart mLineChart;
 
@@ -90,11 +96,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-//        Log.i(LOG_TAG, String.format(getString(R.string.query), "a", "b", "c"));
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
-        fetchStockHistory(5);
+        mWeekTextView.setOnClickListener(createDurationOnClickListener(7));
+        mMonthTextView.setOnClickListener(createDurationOnClickListener(30));
+        mYearTextView.setOnClickListener(createDurationOnClickListener(365));
         return rootView;
     }
 
@@ -164,6 +170,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         LineDataSet lineDataSet = new LineDataSet(mClosingPrices, "$");
         LineData lineData = new LineData(mDates, lineDataSet);
         mLineChart.setData(lineData);
+    }
+
+    public View.OnClickListener createDurationOnClickListener(final int daysAgo){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fetchStockHistory(daysAgo);
+            }
+        };
     }
 
 }
