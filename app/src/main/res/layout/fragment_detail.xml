@@ -36,37 +36,41 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/activity_horizontal_margin">
+            android:background="@drawable/touch_selector_dark">
 
             <TextView
                 android:id="@+id/detail_week_textview"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/one_week" />
+                android:text="@string/one_week"
+                android:padding="16dp"/>
 
             <TextView
                 android:id="@+id/detail_month_textview"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/one_month" />
+                android:text="@string/one_month"
+                android:padding="16dp"/>
 
             <TextView
                 android:id="@+id/detail_year_textview"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/one_year" />
+                android:text="@string/one_year"
+                android:padding="16dp"/>
 
         </LinearLayout>
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/line_chart"
             android:layout_width="match_parent"
-            android:layout_height="400dp" />
+            android:layout_height="400dp"
+            android:background="@android:color/white"/>
 
     </LinearLayout>
 </ScrollView>

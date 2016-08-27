@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -70,13 +71,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     TextView mMonthTextView;
     @BindView(R.id.detail_year_textview)
     TextView mYearTextView;
-    @BindView(R.id.line_chart)
-    LineChart mLineChart;
+
+    private LineChart mLineChart;
 
     private String mSymbol;
     private ArrayList<Entry> mClosingPrices;
     private ArrayList<String> mDates;
     private int mCount;
+    private static int mDaysAgo;
 
 
     public DetailFragment() {
@@ -90,6 +92,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (intent != null) {
             mSymbol = intent.getStringExtra(Intent.EXTRA_TEXT);
         }
+
+        if (savedInstanceState != null){
+            Log.i(LOG_TAG, "DAYS AGO: " + mDaysAgo);
+            fetchStockHistory();
+        }
+
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
     }
 
@@ -98,9 +106,24 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
+
+        mLineChart = (LineChart) rootView.findViewById(R.id.line_chart);
+        mLineChart.setTouchEnabled(true);
+        mLineChart.setDragEnabled(true);
+        mLineChart.setScaleEnabled(true);
+        mLineChart.setPinchZoom(true);
+        mLineChart.getAxisRight().setEnabled(false);
+        mLineChart.getLegend().setEnabled(false);
+        mLineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        mLineChart.setDescription("");
+
         mWeekTextView.setOnClickListener(createDurationOnClickListener(7));
         mMonthTextView.setOnClickListener(createDurationOnClickListener(30));
         mYearTextView.setOnClickListener(createDurationOnClickListener(365));
+        if (savedInstanceState == null){
+            mDaysAgo = 7;
+        }
+        fetchStockHistory();
         return rootView;
     }
 
@@ -121,10 +144,21 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
+
             mSymbolView.setText(mSymbol);
-            mPriceView.setText(data.getString(COL_BIDPRICE));
-            mChangeView.setText(data.getString(COL_CHANGE));
-            mNameView.setText(data.getString(COL_NAME));
+            mSymbolView.setContentDescription(getString(R.string.a11y_symbol, mSymbol));
+
+            String price = data.getString(COL_BIDPRICE);
+            mPriceView.setText(price);
+            mPriceView.setContentDescription(price);
+
+            String change = data.getString(COL_CHANGE);
+            mChangeView.setText(change);
+            mChangeView.setContentDescription(change);
+
+            String name = data.getString(COL_NAME);
+            mNameView.setText(name);
+            mNameView.setContentDescription(name);
         }
     }
 
@@ -133,7 +167,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoaderReset(Loader<Cursor> loader) {
     }
 
-    public void fetchStockHistory(int daysAgo) {
+    public void fetchStockHistory() {
 
         Log.i(LOG_TAG, "DATE: " + Utils.getDate(1));
         Log.i(LOG_TAG, "DATE: " + Utils.getDate(8));
@@ -145,7 +179,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         StockHistoryService.StockHistoryAPI stockHistoryAPI =
                 retrofit.create(StockHistoryService.StockHistoryAPI.class);
 
-        String query = Utils.buildStockHistoryQuery(mSymbol, Utils.getDate(daysAgo), Utils.getDate(1));
+        String query = Utils.buildStockHistoryQuery(mSymbol, Utils.getDate(mDaysAgo), Utils.getDate(1));
         Call<StockHistory> serviceCall = stockHistoryAPI.getHistory(query);
         serviceCall.enqueue(new Callback<StockHistory>() {
             @Override
@@ -170,13 +204,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         LineDataSet lineDataSet = new LineDataSet(mClosingPrices, "$");
         LineData lineData = new LineData(mDates, lineDataSet);
         mLineChart.setData(lineData);
+        mLineChart.animateX(2500);
     }
 
     public View.OnClickListener createDurationOnClickListener(final int daysAgo){
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fetchStockHistory(daysAgo);
+                mDaysAgo = daysAgo;
+                fetchStockHistory();
             }
         };
     }

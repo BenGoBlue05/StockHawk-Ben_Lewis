@@ -76,13 +76,22 @@ public class StockRemoteViewService extends RemoteViewsService {
                         data == null || !data.moveToPosition(i)) {
                     return null;
                 }
-                String symbol = data.getString(INDEX_SYMBOL);
+
 
                 RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.widget_list_item);
-                remoteViews.setTextViewText(R.id.widget_symbol_textview, symbol);
-                remoteViews.setTextViewText(R.id.widget_price_textview, data.getString(INDEX_PRICE));
-                remoteViews.setTextViewText(R.id.widget_change_textview, data.getString(INDEX_CHANGE));
 
+                String symbol = data.getString(INDEX_SYMBOL);
+                remoteViews.setTextViewText(R.id.widget_symbol_textview, symbol);
+                remoteViews.setContentDescription(R.id.widget_symbol_textview,
+                        getString(R.string.a11y_symbol, symbol));
+
+                String price = data.getString(INDEX_PRICE);
+                remoteViews.setTextViewText(R.id.widget_price_textview, price);
+                remoteViews.setContentDescription(R.id.widget_price_textview, price);
+
+                String change = data.getString(INDEX_CHANGE);
+                remoteViews.setTextViewText(R.id.widget_change_textview, change);
+                remoteViews.setContentDescription(R.id.widget_change_textview, change);
 
                 Uri uri = QuoteProvider.Quotes.withSymbol(symbol);
                 Intent intent = new Intent()

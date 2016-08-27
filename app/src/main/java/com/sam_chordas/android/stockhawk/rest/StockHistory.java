@@ -1,5 +1,7 @@
 package com.sam_chordas.android.stockhawk.rest;
 
+import android.util.Log;
+
 import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ import java.util.Locale;
  */
 public class StockHistory {
 
+    private final static String LOG_TAG = StockHistory.class.getSimpleName();
     private Query query;
 
     public StockHistory(Query query) {
@@ -53,19 +56,27 @@ public class StockHistory {
 
     public ArrayList<Entry> getClosingPrices(int count) {
         ArrayList<Entry> closingPrices = new ArrayList<Entry>();
-        List<Quote> quotes = query.getResults().getQuotes();
-        for (int i = 0; i < count; i++) {
-            double price = quotes.get(i).getClose();
-            closingPrices.add(new Entry(Float.parseFloat(String.format(Locale.US, "%.2f", price)), count - i - 1));
+        try{
+            List<Quote> quotes = query.getResults().getQuotes();
+            for (int i = 0; i < count; i++) {
+                double price = quotes.get(count - i - 1).getClose();
+                closingPrices.add(new Entry(Float.parseFloat(String.format(Locale.US, "%.2f", price)), i));
+            }
+        } catch (NullPointerException e){
+            Log.e(LOG_TAG, "NULL POINTER EXCEPTION");
         }
         return closingPrices;
     }
 
     public ArrayList<String> getDates(int count) {
         ArrayList<String> dates = new ArrayList<>();
-        List<Quote> quotes = query.getResults().getQuotes();
-        for (int i = 0; i < count; i++) {
-            dates.add(quotes.get(count - i - 1).getDate());
+        try{
+            List<Quote> quotes = query.getResults().getQuotes();
+            for (int i = 0; i < count; i++) {
+                dates.add(quotes.get(count - i - 1).getDate());
+            }
+        } catch (NullPointerException e){
+            Log.e(LOG_TAG, "NULL POINTER");
         }
         return dates;
     }
