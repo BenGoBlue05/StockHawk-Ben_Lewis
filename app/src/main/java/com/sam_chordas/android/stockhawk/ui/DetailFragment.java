@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +58,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             QuoteColumns.CHANGE,
             QuoteColumns.NAME};
 
+//    @BindView(R.id.toolbar)
+//    Toolbar mToolBar;
     @BindView(R.id.detail_symbol)
     TextView mSymbolView;
     @BindView(R.id.detail_price)
@@ -120,6 +123,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mWeekTextView.setOnClickListener(createDurationOnClickListener(7));
         mMonthTextView.setOnClickListener(createDurationOnClickListener(30));
         mYearTextView.setOnClickListener(createDurationOnClickListener(365));
+
         if (savedInstanceState == null){
             mDaysAgo = 7;
         }
@@ -144,6 +148,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
 
             mSymbolView.setText(mSymbol);
             mSymbolView.setContentDescription(getString(R.string.a11y_symbol, mSymbol));
@@ -159,6 +164,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             String name = data.getString(COL_NAME);
             mNameView.setText(name);
             mNameView.setContentDescription(name);
+            try{
+                activity.getSupportActionBar().setTitle(name);
+            } catch (NullPointerException e){
+                Log.e(LOG_TAG, "NULL POINTER");
+            }
         }
     }
 
