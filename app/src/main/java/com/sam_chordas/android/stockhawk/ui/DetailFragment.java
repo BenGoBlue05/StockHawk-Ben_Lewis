@@ -66,8 +66,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     TextView mPriceView;
     @BindView(R.id.detail_change)
     TextView mChangeView;
-    @BindView(R.id.detail_name)
-    TextView mNameView;
     @BindView(R.id.detail_week_textview)
     TextView mWeekTextView;
     @BindView(R.id.detail_month_textview)
@@ -162,8 +160,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mChangeView.setContentDescription(change);
 
             String name = data.getString(COL_NAME);
-            mNameView.setText(name);
-            mNameView.setContentDescription(name);
             try{
                 activity.getSupportActionBar().setTitle(name);
             } catch (NullPointerException e){

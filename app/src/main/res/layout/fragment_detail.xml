@@ -9,41 +9,41 @@
         android:orientation="vertical"
         tools:context="com.sam_chordas.android.stockhawk.ui.DetailFragment">
 
-        <!--<android.support.v7.widget.Toolbar-->
-            <!--android:id="@+id/toolbar"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="?attr/actionBarSize"-->
-            <!--android:background="@android:color/white" />-->
-        <TextView
-            android:id="@+id/detail_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Facebook, Inc. Common Stock" />
-
         <TextView
             android:id="@+id/detail_symbol"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="FB" />
-
+            tools:text="FB"
+            android:textColor="@color/material_blue_500"
+            android:textAppearance="?android:textAppearanceMedium"
+            />
         <TextView
             android:id="@+id/detail_price"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="124.73" />
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textStyle="bold"
+            android:textSize="32sp"
+            tools:text="124.73"
+            />
 
         <TextView
             android:id="@+id/detail_change"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="+.46%" />
+            tools:text="+.46% (+.56)"
+            tools:textColor= "@android:color/holo_green_light"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textStyle="italic"/>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/touch_selector_dark">
+            >
 
             <TextView
+                android:background="@drawable/touch_selector_dark"
                 android:id="@+id/detail_week_textview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -52,6 +52,7 @@
                 android:padding="16dp"/>
 
             <TextView
+                android:background="@drawable/touch_selector_dark"
                 android:id="@+id/detail_month_textview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -61,6 +62,7 @@
                 android:padding="16dp"/>
 
             <TextView
+                android:background="@drawable/touch_selector_dark"
                 android:id="@+id/detail_year_textview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
