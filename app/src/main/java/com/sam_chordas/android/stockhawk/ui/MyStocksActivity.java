@@ -21,6 +21,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -84,10 +85,11 @@ public class MyStocksActivity extends AppCompatActivity
             }
         }
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        TextView emptyView = (TextView) findViewById(R.id.empty_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
-        mCursorAdapter = new QuoteCursorAdapter(this, null);
+        mCursorAdapter = new QuoteCursorAdapter(this, null, emptyView);
         recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
                 new RecyclerViewItemClickListener.OnItemClickListener() {
                     @Override
@@ -237,10 +239,12 @@ public class MyStocksActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mCursorAdapter.swapCursor(null);
     }
+
 }
