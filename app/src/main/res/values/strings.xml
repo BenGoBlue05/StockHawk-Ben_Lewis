@@ -23,4 +23,6 @@
     <string name="a11y_change">Change: <xliff:g id="condition">%1$s</xliff:g></string>
 
     <string name="detail_action_bar_title"><xliff:g id="title">%1$s</xliff:g></string>
+    <string name="stock_already_saved">This stock is already saved!</string>
+    <string name="floating_action_button">Floating action button</string>
 </resources>
